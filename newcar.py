@@ -18,8 +18,8 @@ import pygame
 WIDTH = 1920
 HEIGHT = 1080
 
-CAR_SIZE_X = 60
-CAR_SIZE_Y = 60
+CAR_SIZE_X = 50
+CAR_SIZE_Y = 50
 
 BORDER_COLOR = (255, 255, 255, 255)  # Color To Crash on Hit
 
@@ -37,11 +37,18 @@ why it is necessary and where it is being used in the rest of the program.
 
 
 class Car:
-    """1. This Function:"""
+    """1. This Function:
+    This function is the class constructor. This is a special function which is called upon when an
+    object of the car class is instantiated. Attributes of the car class are defined here.
+    Notably, alive, distance, time, radars and position
+
+    """
 
     def __init__(self):
         # Load Car Sprite and Rotate
-        self.sprite = pygame.image.load("car.png").convert()  # Convert Speeds Up A Lot
+        self.sprite = pygame.image.load(
+            "car-green.png"
+        ).convert()  # Convert Speeds Up A Lot
         self.sprite = pygame.transform.scale(self.sprite, (CAR_SIZE_X, CAR_SIZE_Y))
         self.rotated_sprite = self.sprite
 
@@ -238,6 +245,60 @@ class Car:
 
 """ This Function:
 
+1.  Empty Collections Initialization:
+    nets: A list to hold neural networks corresponding to each genome.
+    cars: A list to hold instances of the Car class that the neural networks control.
+    
+2.  Initializing PyGame and Display:
+    The Pygame library is initialized, and a display window is created with the specified dimensions.
+
+3.  Creating Neural Networks and Cars:
+    For each genome passed into the run_simulation function:
+    A neural network is created using the neat.nn.FeedForwardNetwork.create(g, config) method. The genome g and configuration config are used to create the network.
+    The neural network is added to the nets list, and the genome's fitness is set to 0.
+    A new instance of the Car class is created and added to the cars list.
+
+4.  Clock and Font Settings:
+    A PyGame clock is created to control the frame rate of the simulation.
+    Different fonts are loaded for displaying information on the screen.
+
+Updating the Generation Counter:
+
+The current_generation global variable is incremented, indicating the current generation being simulated.
+Main Simulation Loop:
+
+The loop runs indefinitely, simulating the behavior of each car and updating the neural networks based on their actions.
+Event Handling:
+
+PyGame events are processed within the loop.
+If the user closes the window or presses the escape key, the program exits.
+Car Actions and Neural Network Activation:
+
+For each car, the neural network is activated with the car's sensor data using nets[i].activate(car.get_data()).
+The highest value in the output of the neural network determines the car's action: left, right, slow down, or speed up.
+Updating Fitness and Car Movement:
+
+For each alive car, the car's fitness is increased, and its position and movement are updated based on its action.
+Checking Car Survival:
+
+The number of cars that are still alive is counted.
+If no cars are alive, the simulation loop is terminated.
+Time Limit for Simulation:
+
+A simple counter is used to roughly limit the duration of the simulation.
+Drawing the Game Environment:
+
+The game map is drawn on the screen.
+For each alive car, its image is drawn on the screen.
+Displaying Information:
+
+Text information about the current generation, number of cars alive, and mean fitness is displayed on the screen.
+Updating Display and Frame Rate:
+
+The display is updated with the drawn elements.
+The frame rate is controlled using the clock, ensuring a maximum of 60 frames per second.
+
+
 """
 
 
@@ -263,6 +324,7 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
+    mean_font = pygame.font.SysFont("Arial", 20)
     game_map = pygame.image.load("map.png").convert()  # Convert Speeds Up A Lot
 
     global current_generation
@@ -273,9 +335,15 @@ def run_simulation(genomes, config):
 
     while True:
         # Exit On Quit Event
+        """
+        Mod: added on keydown/esc to quit the game
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sys.exit(0)
 
         # For Each Car Get The Acton It Takes
         for i, car in enumerate(cars):
@@ -326,11 +394,56 @@ def run_simulation(genomes, config):
         text_rect.center = (900, 490)
         screen.blit(text, text_rect)
 
+        text = mean_font.render(
+            "Mean Fitness: " + str(neat.StatisticsReporter().get_fitness_mean()),
+            True,
+            (0, 0, 0),
+        )
+        text_rect = text.get_rect()
+        text_rect.center = (900, 530)
+        screen.blit(text, text_rect)
+
         pygame.display.flip()
         clock.tick(60)  # 60 FPS
 
 
-""" 1. This Section:
+""" 1. This Section: The program main section
+    The if __name__ == "__main__": block ensures that the code within it 
+    only executes when the script is run directly (not when imported as a module).
+    
+    The config.txt file settings are loaded into the config variable using Config()
+        neat.DefaultGenome
+            Various options that control genome node activation, aggregation, bias, 
+            compatibility, connection management, feed-forward architecture, response, 
+            and weight settings.
+            num_hidden, num_inputs, num_outputs: 
+            Specifies the number of hidden, input, and output nodes, respectively.
+            These parameters collectively define the structure and characteristics 
+            of the neural networks represented by the genomes.
+            
+        neat.DefaultReproduction
+            elitism: Specifies the number of elite genomes that are directly passed 
+            to the next generation.
+            survival_threshold: Sets the survival threshold, indicating the proportion 
+            of genomes in each species that are considered for reproduction.
+            
+        neat.DefaultSpeciesSet
+            compatibility_threshold: Specifies the compatibility threshold used for 
+            determining species separation. Genomes with compatibility distance below 
+            this threshold belong to the same species.
+            
+        neat.DefaultStagnation
+            species_fitness_func: Defines the function to use when determining species 
+            fitness. In this case, 'max' indicates that the maximum fitness of a 
+            species is used.
+            max_stagnation: Specifies the maximum number of generations a species 
+            can remain stagnant before it's considered for stagnation and possible 
+            extinction.
+            species_elitism: Specifies the number of elite genomes from each species 
+            that are preserved to the next generation.
+            
+        config_path
+    
     
 """
 if __name__ == "__main__":
