@@ -89,6 +89,13 @@ Screen size not correct - We're working on that... (Learn some Pygame)
 - [Self-Driving AI Car Simulation in Python](https://www.youtube.com/watch?v=Cy155O5R1Oo)
 - [Get Started in Pygame in 10 minutes!](https://www.youtube.com/watch?v=y9VG3Pztok8)
 
+## Student Exemplars
+
+- [Elitism in NEAT](https://cgsacteduau.sharepoint.com/:b:/s/cgssharedfolders/ETC5zwW_I9ZGhszOXxjnTGEB34lyz50Up_RETScGFnnCJQ?e=jRkcds)
+- [Rewards in NEAT](https://cgsacteduau.sharepoint.com/:b:/s/cgssharedfolders/EYkd0gQnvsxFvUMY-prWMYEBm8fiz4uwNvhlLjwdV-UaxA?e=iDN5PS)
+- [Activations in NEAT](https://cgsacteduau.sharepoint.com/:b:/s/cgssharedfolders/ERop8hcPyU9AonHjrhJKFSgB-6iGfAdDUNZvCLQOXs6D6A?e=U8AXqd)
+
+
 ## Credits
 
 NeuralNine - Florian Dedov
