@@ -18,8 +18,8 @@ import pygame
 WIDTH = 1920
 HEIGHT = 1080
 
-CAR_SIZE_X = 50
-CAR_SIZE_Y = 50
+CAR_SIZE_X = 95
+CAR_SIZE_Y = 95
 
 BORDER_COLOR = (255, 255, 255, 255)  # Color To Crash on Hit
 
@@ -38,10 +38,21 @@ why it is necessary and where it is being used in the rest of the program.
 
 class Car:
     """1. This Function:
-    This function is the class constructor. This is a special function which is called upon when an
-    object of the car class is instantiated. Attributes of the car class are defined here.
-    Notably, alive, distance, time, radars and position
+    This function is the 'Class Constructor'. This is a special type of function in a class that is immediately called when
+    a new version of a class is created. Inside of a Class Constructor, any code can be run, however, the code should mainly
+    have the objective of initializing the new classes properties/attributes.
 
+    In this constructor, the car sprite is loaded into memory (a storage space where a computer can access information a lot
+    quicker). The scale of the sprite is then calculated based on 2 defined values, 'CAR_SIZE_X' and 'CAR_SIZE_Y' (both being the value 50). The sprite
+    is then copied into another variable called 'rotated_sprite'.
+
+    The sprites starting position is then set to an array with the values: 830 (x) and 920 (y) and it's angle and speed are also initialised (both to 0).
+    Another value called 'speed_set' is also initialised to False, this value will later be used to set the car's speed to a value greater than 0 (effectively
+    starting the car).
+
+    'self.center' is initialised to an array that will calculate the center point of the car. Both 'self.radars' and 'self.drawing_radars' are both initialised
+    to empty arrays. 'self.alive' is a value used to check whether the car has crashed or not, and is initialised to True (alive). 'self.distance' and 'self.time'
+    are both initialised to 0, both of these variables being a measure for how well this Car has performed.
     """
 
     def __init__(self):
@@ -73,7 +84,10 @@ class Car:
         self.time = 0  # Time Passed
 
     """ 2. This Function:
-    
+    'draw()' is a custom function that aims to take the value of the Car in memory and draw it on the screen. This is done through 'screen.blit()' where 'blit'
+    stands for 'Block Image Transfer'. It is used to draw a loaded object (object/image in memory) onto the screen. The 'screen' is the surface for where the
+    image will be drawn. 'blit()' takes 2 compulsory parameters: 'source' and 'dest'. 'source' is the image you want to load onto the surface, and 'dest' is a
+    tuple (array) of where on the screen you want the image to be drawn. 'draw_radar()' is the next function and is optional
     """
 
     def draw(self, screen):
@@ -81,7 +95,15 @@ class Car:
         self.draw_radar(screen)  # OPTIONAL FOR SENSORS
 
     """ 3. This Function:
-    
+    'draw_radar()' is an optional function that gives a visual representation of the cars sensors and radar. The function takes 2 parameters, 'self' (used to
+    access it's own classes properties/attributes) and 'screen' (the screen of the computer). It starts by looping through all the radars in 'radars' and then
+    creates a variable called 'position' that takes the current loop cycle's radar's position. The function then uses pygame's 'draw.line()' and 'draw.circle()'
+    to draw them onto the screen. They both take 4 compulsory parameters with 2 of them being shared between both: 'surface' and 'colour'. 'surface', as discussed
+    previously, is the canvas that you are drawing this object on, such as the screen. 'colour' takes a tuple (array) as it's value in the form of 3 elements, each
+    corresponding to an RGB (Red, Green, Blue) value for 0 to 255. 'draw.line()' has 2 other compulsory arguments: 'start_pos' and 'end_pos', both taking a tuple
+    in the form of a coordinate, for which a line will be drawn by pygame between the two. 'draw.circle' also has another 2 arguments: 'center' and 'radius'.
+    'center' is a tuple that corresponds to the coordinate of where the circle will be drawn and 'radius' needs a value that corresponds with the amount of pxiels
+    that the radius of the circle will be.
     """
 
     def draw_radar(self, screen):
@@ -92,7 +114,12 @@ class Car:
             pygame.draw.circle(screen, (0, 255, 0), position, 5)
 
     """ 4. This Function:
-    
+    'check_collision()' is a custom function that checks whether or not the corners of the car have had a collision with the racetrack borders. The function
+    achieves this by using the 'get_at' method in the pygame library to obtain the pixel value at a specific coordinate on a surface, which in this context
+    is the 'game_map' a.k.a the png file that represents the racetrack for the cars. The function checks each corner of the car using 'self.corners' and
+    represents them as a variable called 'point'. 'point's 'x' and 'y' coordinate are used as parameters for 'get_at' and typecast to integers before being
+    compared to 'BORDER_COLOR's value. If it is true that one of the points RGB value is the same as BORDER_COLOR's, then the 'self.alive' variable's value
+    changed to false and the for loop breaks (it stops looping).
     """
 
     def check_collision(self, game_map):
@@ -105,7 +132,20 @@ class Car:
                 break
 
     """ 5. This Function:
-    
+    'check_radar()' is a custom function that checks whether a radar-like system around the car collides with the racetrack border. This function has 4 main
+    variables that are important: 
+        - 'length'
+        - 'x'
+        - 'y'
+        - 'BORDER_COLOR'
+    'length' acts as the radius for the radar. While the function runs, it slowly increments by 1 to extend the radar. 'x' and 'y' are the point along the
+    line of the radar that is being checked for a collision. 'BORDER_COLOR' is the RGB value that is compared to the RGB value of the point on the line, if
+    RGB values match then there is a collison. This function initiates by calculating the starting x and y coordinates based on the input angle (adjusted 
+    by the object's current angle) and trigonometric functions. It then enters a while loop that persists until the radar either collides with a border, 
+    discerned by a matching color code, or reaches a maximum distance of 300 units. Within each loop iteration, it incrementally extends the radar's length 
+    by one unit, thereby updating the x and y coordinates to examine a further point along the radar line. Upon exiting the loop, the function computes the
+    distance between the center and the detected point using the Pythagorean theorem,which is then appended to the self.radars list along with the coordinates 
+    of the detected point.
     """
 
     def check_radar(self, degree, game_map):
@@ -138,7 +178,17 @@ class Car:
         self.radars.append([(x, y), dist])
 
     """ 6. This Function:
-    
+    The 'update()' function is a custom function that aims to update the car's state every frame/iteration of the game loop. The beginning of this function makes
+    sure that the car is moving first by checking whether 'speed_set' is True. If it isn't, then it is set to True and the 'speed' variable is then set to 20.
+    The function then makes sure that the car is rotated in the right direction. It uses the 'rotate_center' angle, which in summary for when this function is
+    actually discussed, basically returns a rotated version of the sprite based on the angle parameter it is given. The position of the car is then updated based
+    on which angle the car is rotated on multiplied by the cars speed. The function then restricts the cars position on the x-coordinate to be within a certain
+    range (that being 20px to the left edge and 120px to the right edge of the surface/screen). The function then increases the 'distance' variable by the 'speed'
+    variable and the 'time' variable by 1. The function does what it did to the x-coordinate of the cars position to the y-coordinate. The function then sets the
+    center of the car again based on the changes made to the values previously. Next, the function sets the values of the corners of the car and assigns them to
+    the 'corners' variable. After updating all the values, the function then calls the 'check_collision()' function, using it's updated values as the parameters.
+    It then clears the 'radar' list's elements. The function then sets up a for loop where 'd' will start at -90 degrees and increment by 45 degrees until it
+    reaches 120 degrees. In each iteration of the loop, it plugs that value as the degree parameter for the 'check_radar()' function.
     """
 
     def update(self, game_map):
@@ -200,7 +250,9 @@ class Car:
             self.check_radar(d, game_map)
 
     """ 7. This Function:
-    
+    'get_data()' is a custom function that aims to retreive data from 'radars' and scale it down. The function first assigns the radar values to 'radars' and
+    then creates an array with 5 values all equalling 0 inside. It then iterates over each value in 'radars', assigning the radar distance divided by 30 as a
+    typecast integer into 'return_values' current index determined by 'i'. The function then returns 'return_values'
     """
 
     def get_data(self):
@@ -213,7 +265,7 @@ class Car:
         return return_values
 
     """ 8. This Function:
-    
+    'is_alive' is a custom function that will send a True boolean value if the 'alive' variable is True and vice versa if it is False.
     """
 
     def is_alive(self):
@@ -221,7 +273,7 @@ class Car:
         return self.alive
 
     """ 9. This Function:
-    
+    'get_reward()' is a custom function that returns a value based on how far the car has driven divided by half of it's size
     """
 
     def get_reward(self):
@@ -230,7 +282,12 @@ class Car:
         return self.distance / (CAR_SIZE_X / 2)
 
     """ 10. This Function:
-    
+    'rotate_center()' is a custom function that rotates a sprite around it's center based on a specific degree given. The function first obtains the rectangle
+    that surrounds the sprite and assigns it to the 'rectangle' variable. The function then rotates the sprite using the image parameter (the sprite) and
+    rotates it by the given 'angle' parameter. A new variable is then created called 'rotated_rectangle' and it has all the properties of the 'rectangle'
+    variable. 'rotated_rectangle' is then assigned a center based on the 'rotated_image's center. The 'rotated_image' variable is then assigned to itself but the
+    subsurface method is appended create a new image object using the area defined by rotated_rectangle. This is done to cut off any extra space and to keep the 
+    image dimensions consistent with the original. 'rotated_image' is then returned.
     """
 
     def rotate_center(self, image, angle):
